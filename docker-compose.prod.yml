@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # --- The Core (Next.js + Mastra) ---
+  app:
+    image: ghcr.io/your-user/rpcn-core:latest
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file: .env.production
+    depends_on:
+      - neo4j
+      - qdrant
+    networks:
+      - rpcn-net
+
+  # --- The Pencil (Graph DB) ---
+  neo4j:
+    image: neo4j:5.15
+    restart: always
+    environment:
+      NEO4J_AUTH: ${NEO4J_AUTH} # format: neo4j/password
+    volumes:
+      - ./data/neo4j:/data
+    networks:
+      - rpcn-net
+
+  # --- The Sticky Notes (Vector DB) ---
+  qdrant:
+    image: qdrant/qdrant:latest
+    restart: always
+    volumes:
+      - ./data/qdrant:/qdrant/storage
+    networks:
+      - rpcn-net
+
+networks:
+  rpcn-net:
+    driver: bridge
