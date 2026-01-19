@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { login, signup } from './actions';
 
 export default function LoginPage() {
     const [isLogin, setIsLogin] = useState(true);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -17,11 +19,19 @@ export default function LoginPage() {
         const action = isLogin ? login : signup;
 
         try {
-            const errorMessage = await action(formData);
-            if (errorMessage) {
-                setError(errorMessage);
+            const result = await action(formData);
+
+            if (!result.success) {
+                setError(result.error || 'Authentication failed');
+                return;
             }
+
+            // Client-side redirect ensures we don't catch NEXT_REDIRECT as an error
+            router.push('/');
+            router.refresh();
+
         } catch (err: any) {
+            console.error('Login error:', err);
             setError(err.message || 'An unexpected error occurred');
         } finally {
             setLoading(false);

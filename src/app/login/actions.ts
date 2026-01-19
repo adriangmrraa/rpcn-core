@@ -16,11 +16,11 @@ export async function login(formData: FormData) {
     const { error } = await supabase.auth.signInWithPassword(data);
 
     if (error) {
-        return error.message;
+        return { success: false, error: error.message };
     }
 
     revalidatePath('/', 'layout');
-    redirect('/');
+    return { success: true };
 }
 
 export async function signup(formData: FormData) {
@@ -34,10 +34,10 @@ export async function signup(formData: FormData) {
     const { error } = await supabase.auth.signUp(data);
 
     if (error) {
-        return error.message;
+        return { success: false, error: error.message };
     }
 
     // Since email confirmation is disabled, we redirect to dashboard immediately
     revalidatePath('/', 'layout');
-    redirect('/');
+    return { success: true };
 }
