@@ -1,4 +1,4 @@
-import { Tool } from '@mastra/core';
+import { Tool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { Sandbox } from '@e2b/code-interpreter';
 import { emitToolUse } from '@/lib/events';
