@@ -208,4 +208,5 @@ export const roundTableWorkflow = new Workflow({
     .then(executeToolsStep)
     .commit();
 
+export const reasoningEngine = roundTableWorkflow;
 export * from './round_table';
