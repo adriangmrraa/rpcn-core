@@ -62,10 +62,11 @@ const planStrategyStep = createStep({
     id: 'planStrategy',
     inputSchema: z.object({
         task: z.string(),
+        user_id: z.string(),
         context_summary: z.string(),
         user_skills: z.array(z.string()),
     }),
-    outputSchema: PlanSchema.extend({ task: z.string(), user_skills: z.array(z.string()) }),
+    outputSchema: PlanSchema.extend({ task: z.string(), user_skills: z.array(z.string()), user_id: z.string() }),
     execute: async ({ inputData, getStepResult }) => {
         // Check for feedback if we are in a loop
         const lastCritique = getStepResult('critiqueStep');
@@ -86,6 +87,7 @@ const planStrategyStep = createStep({
             plan_steps: response.text.split('\n').filter(s => s.trim().length > 0),
             required_tools: ['python_code_interpreter'],
             user_skills: inputData.user_skills,
+            user_id: inputData.user_id,
         };
     },
 });
@@ -95,8 +97,10 @@ const critiqueStep = createStep({
     inputSchema: z.object({
         task: z.string(),
         plan_steps: z.array(z.string()),
+        user_id: z.string(),
+        user_skills: z.array(z.string()),
     }),
-    outputSchema: CritiqueSchema,
+    outputSchema: CritiqueSchema.extend({ user_id: z.string(), user_skills: z.array(z.string()) }),
     execute: async ({ inputData, runCount }) => {
         emitThought('Critic', `Auditing plan (Attempt ${runCount + 1})...`, 'planning');
 
@@ -114,6 +118,8 @@ const critiqueStep = createStep({
             is_approved: isApproved,
             feedback,
             score,
+            user_id: inputData.user_id,
+            user_skills: inputData.user_skills,
         };
     },
 });
@@ -171,6 +177,7 @@ const logicLoopWorkflow = new Workflow({
             task: plan.task,
             plan_steps: plan.plan_steps,
             user_skills: inputData.user_skills,
+            user_id: inputData.user_id,
         };
     })
     .then(critiqueStep)
@@ -181,8 +188,8 @@ const logicLoopWorkflow = new Workflow({
             plan_steps: plan?.plan_steps || [],
             is_approved: critique?.is_approved || false,
             feedback: critique?.feedback || '',
-            user_id: inputData.user_id,
-            user_skills: inputData.user_skills,
+            user_id: critique?.user_id || inputData.user_id, // Fallback if critique failed or logic mismatch
+            user_skills: critique?.user_skills || inputData.user_skills,
         };
     })
     .commit();

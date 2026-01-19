@@ -44,8 +44,7 @@ export function CodeArtifact() {
                         lineHeight: 20,
                         padding: { top: 16 },
                         fontFamily: 'JetBrains Mono, monospace',
-                        scrollBeyondLastLine: false,
-                        backgroundColor: '#0A0A0A'
+                        scrollBeyondLastLine: false
                     }}
                 />
             </div>

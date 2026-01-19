@@ -41,7 +41,7 @@ export class AgentRegistry {
         Execute only the portion of the task related to your domain.
         Return your findings to the Orchestrator.
       `,
-            model: openai('gpt-4o-mini'), // Cheaper model for transient tasks
+            model: openai('gpt-4o-mini') as any, // Cheaper model for transient tasks
         });
     }
 

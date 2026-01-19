@@ -27,7 +27,7 @@ export async function DELETE(req: NextRequest) {
         // 2. Delete from Qdrant (Sticky Notes)
         if (vector_id) {
             const qdrant = getQdrantClient();
-            await qant.delete('rpcn_memory', {
+            await qdrant.delete('rpcn_memory', {
                 points: [vector_id]
             });
         }

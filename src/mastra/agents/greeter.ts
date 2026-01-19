@@ -5,7 +5,7 @@ import { knowledgeGraphManagerTool } from '../tools/graph';
 export const greeterAgent = new Agent({
     id: 'onboarding-agent',
     name: 'The Greeter',
-    model: openai('gpt-4o'),
+    model: openai('gpt-4o-mini') as any,
     instructions: `You are The Greeter, the onboarding specialist for RPCN.
 You are the first point of contact for a new human user.
 

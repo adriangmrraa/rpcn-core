@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { ChevronDown, ChevronRight, Brain, Tool, ShieldCheck, Search } from 'lucide-react';
+import { ChevronDown, ChevronRight, Brain, Wrench, ShieldCheck, Search } from 'lucide-react';
 
 export interface ThoughtStep {
     type: 'thought' | 'tool_use' | 'error';
@@ -23,7 +23,7 @@ export const ThoughtBubble = ({ steps }: { steps: ThoughtStep[] }) => {
             case 'librarian': return <Search className="h-3 w-3" />;
             case 'architect': return <Brain className="h-3 w-3" />;
             case 'critic': return <ShieldCheck className="h-3 w-3" />;
-            default: return <Tool className="h-3 w-3" />;
+            default: return <Wrench className="h-3 w-3" />;
         }
     };
 
@@ -55,7 +55,7 @@ export const ThoughtBubble = ({ steps }: { steps: ThoughtStep[] }) => {
                                 "z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/10 text-white shadow-lg",
                                 step.type === 'thought' ? "bg-[#1e1e24]" : "bg-amber-500/20 text-amber-400 border-amber-500/20"
                             )}>
-                                {step.agent ? getAgentIcon(step.agent) : step.type === 'tool_use' ? <Tool className="h-3 w-3" /> : '!'}
+                                {step.agent ? getAgentIcon(step.agent) : step.type === 'tool_use' ? <Wrench className="h-3 w-3" /> : '!'}
                             </div>
 
                             <div className="flex flex-1 flex-col justify-center py-0.5">

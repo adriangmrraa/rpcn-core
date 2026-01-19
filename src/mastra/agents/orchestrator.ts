@@ -9,6 +9,14 @@ export const OrchestratorDecisionSchema = z.object({
   status: z.enum(['running', 'finished', 'blocked']).default('running'),
 });
 
+export interface RPCNState {
+  task: string;
+  nextAgent: string;
+  plan: string;
+  status: 'running' | 'completed';
+  [key: string]: any;
+}
+
 export const orchestratorAgent = new Agent({
   name: 'orchestrator-agent',
   instructions: `

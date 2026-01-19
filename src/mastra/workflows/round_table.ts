@@ -13,7 +13,7 @@ const orchestratorStep = createStep({
     outputSchema: z.object({
         decision: z.object({
             status: z.enum(['running', 'complete', 'failed']),
-            nextInstruction: z.string().optional(),
+            nextInstruction: z.string(),
             specialistRequired: z.string().optional(),
         }),
         updatedState: z.any().optional(),
@@ -81,10 +81,14 @@ export const roundTableWorkflow = new Workflow({
         context: z.array(z.any()).optional(),
     }),
     outputSchema: z.object({
-        completion: z.string().optional(),
-        finalState: z.any().optional(),
+        result: z.string(),
+        observations: z.array(z.string()),
     }),
 })
     .then(orchestratorStep)
+    .map(async ({ inputData }) => ({
+        instruction: inputData.decision.nextInstruction,
+        state: inputData.updatedState
+    }))
     .then(specialistStep)
     .commit();

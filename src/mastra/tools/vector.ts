@@ -35,7 +35,7 @@ export const vectorMemorySearchTool = new Tool({
             return { success: true, results };
         } catch (error: any) {
             console.error('Qdrant Secure Tool Error:', error);
-            return { success: false, error: error.message };
+            return { success: false, error: error.message, results: [] };
         }
     },
 });

@@ -14,7 +14,7 @@ export class MastraAgentAdapter implements IAgentService {
         cognitiveBus.on('thought', handleThought);
 
         try {
-            const workflow = rpcNetwork.getWorkflow('reasoning-engine-v1');
+            const workflow = rpcNetwork.getWorkflow('roundTableWorkflow');
 
             const initialState: RoundTableState = {
                 user_objective: task,
