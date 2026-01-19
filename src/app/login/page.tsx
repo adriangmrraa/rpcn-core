@@ -23,17 +23,23 @@ export default function LoginPage() {
 
             if (!result.success) {
                 setError(result.error || 'Authentication failed');
+                setLoading(false);
                 return;
             }
 
-            // Client-side redirect ensures we don't catch NEXT_REDIRECT as an error
-            router.push('/');
-            router.refresh();
+            if (isLogin) {
+                router.push('/');
+                router.refresh();
+            } else {
+                // Signup Success
+                setIsLogin(true); // Switch to login view
+                alert("Identity Initialized successfully. You may now Establish Link.");
+                setLoading(false);
+            }
 
         } catch (err: any) {
-            console.error('Login error:', err);
+            console.error('Auth error:', err);
             setError(err.message || 'An unexpected error occurred');
-        } finally {
             setLoading(false);
         }
     };
