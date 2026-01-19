@@ -133,32 +133,56 @@ export function Workspace({ children, rightPane: rightPaneProp, isThinking: isTh
                 <PanelResizeHandle className="w-1 bg-border/20 transition-colors hover:bg-agent-thinking/40" />
 
                 {/* Center Pane: Dynamic Content */}
-                <Panel defaultSize={50} minSize={30}>
-                    <div className="flex h-full flex-col relative">
-                        <header className="flex h-16 items-center justify-between border-b border-border/50 px-6 glass">
-                            <div className="flex items-center gap-2">
-                                <div className={cn(
-                                    "h-2 w-2 rounded-full",
-                                    isThinking ? "bg-agent-thinking animate-pulse" : "bg-agent-acting shadow-[0_0_8px_rgba(16,185,129,0.5)]"
-                                )} />
-                                <span className="text-xs font-medium uppercase tracking-widest text-foreground/60 leading-none">
-                                    {isThinking ? "Neural Sync in Progress..." : "Core Stable"}
-                                </span>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <button className="text-foreground/40 hover:text-foreground transition-colors">
-                                    <Search className="h-4 w-4" />
-                                </button>
-                                <button className="text-foreground/40 hover:text-foreground transition-colors">
-                                    <Settings className="h-4 w-4" />
-                                </button>
-                            </div>
-                        </header>
+                import {LiveTerminal} from '@/components/LiveTerminal';
 
-                        <div className="flex-1 overflow-hidden relative">
-                            {children}
-                        </div>
-                    </div>
+                // ... existing imports ...
+
+                // ... inside component ...
+                {/* Center Pane: Dynamic Content + Terminal */}
+                <Panel defaultSize={60} minSize={30}>
+                    <PanelGroup direction="vertical">
+                        <Panel defaultSize={75} minSize={50}>
+                            <div className="flex h-full flex-col relative">
+                                <header className="flex h-16 items-center justify-between border-b border-border/50 px-6 glass">
+                                    <div className="flex items-center gap-2">
+                                        <div className={cn(
+                                            "h-2 w-2 rounded-full",
+                                            isThinking ? "bg-agent-thinking animate-pulse" : "bg-agent-acting shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                                        )} />
+                                        <span className="text-xs font-medium uppercase tracking-widest text-foreground/60 leading-none">
+                                            {isThinking ? "Neural Sync in Progress..." : "Core Stable"}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <button className="text-foreground/40 hover:text-foreground transition-colors">
+                                            <Search className="h-4 w-4" />
+                                        </button>
+                                        <button className="text-foreground/40 hover:text-foreground transition-colors">
+                                            <Settings className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                </header>
+
+                                <div className="flex-1 overflow-hidden relative">
+                                    {children}
+                                </div>
+                            </div>
+                        </Panel>
+
+                        <PanelResizeHandle className="h-1 bg-border/20 transition-colors hover:bg-agent-thinking/40" />
+
+                        <Panel defaultSize={25} minSize={10} collapsible>
+                            <div className="h-full w-full bg-[#050505] flex flex-col">
+                                <header className="h-8 flex items-center px-4 border-b border-white/5 bg-white/[0.02]">
+                                    <Terminal className="h-3 w-3 text-agent-thinking mr-2" />
+                                    <span className="text-[10px] font-mono uppercase tracking-widest text-white/40">Use / Logs</span>
+                                </header>
+                                <div className="flex-1 overflow-hidden p-2">
+                                    <LiveTerminal />
+                                </div>
+                            </div>
+                        </Panel>
+                    </PanelGroup>
                 </Panel>
 
                 {rightPane && (

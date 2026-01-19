@@ -32,56 +32,15 @@ export default function NeuralHub() {
     setIsThinking(isLoading);
   }, [isLoading, setIsThinking]);
 
+  // Default to Graph Mode for Glass Box UX
+  useEffect(() => {
+    setRightPaneMode('graph');
+    return () => setRightPaneContent(null);
+  }, [setRightPaneMode, setRightPaneContent]);
+
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  // Teleport Right Pane Content based on Hub State
-  useEffect(() => {
-    const hubRightPane = (
-      <div className="space-y-6">
-        <AnimatePresence mode="popLayout">
-          {(isLoading || currentThoughts.length > 0) && (
-            <div className="space-y-4">
-              <header className="flex items-center justify-between">
-                <span className="text-[9px] font-bold uppercase tracking-widest text-agent-thinking">TRM Logic Stream</span>
-                {isLoading && <div className="h-1 w-12 rounded-full bg-agent-thinking/20 overflow-hidden">
-                  <div className="h-full w-full bg-agent-thinking shimmer" />
-                </div>}
-              </header>
-              <ThoughtSpace steps={currentThoughts} />
-            </div>
-          )}
-        </AnimatePresence>
-
-        {!isLoading && messages.findLast(m => m.role === 'assistant' && m.thoughts)?.thoughts && (
-          <div className="pt-6 border-t border-white/5 space-y-4">
-            <header className="flex items-center justify-between">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-foreground/20">Archived Logic Path</span>
-              <button
-                onClick={() => setRightPaneMode('graph')}
-                className="text-[9px] text-foreground/40 hover:text-agent-thinking transition-colors underline cursor-pointer"
-              >
-                View memory graph
-              </button>
-            </header>
-            <ThoughtSpace steps={messages.findLast(m => m.role === 'assistant' && m.thoughts)!.thoughts!} />
-          </div>
-        )}
-
-        {!isLoading && messages.length <= 1 && (
-          <div className="flex flex-col items-center justify-center h-[200px] border border-dashed border-white/10 rounded-xl bg-white/[0.02]">
-            <span className="text-[10px] text-foreground/20 uppercase tracking-widest">Awaiting interaction</span>
-          </div>
-        )}
-      </div>
-    );
-
-    setRightPaneContent(hubRightPane);
-
-    // Cleanup when leaving the hub
-    return () => setRightPaneContent(null);
-  }, [isLoading, currentThoughts, messages, setRightPaneContent, setRightPaneMode]);
+  }, [messages, currentThoughts]);
 
   const handleSendMessage = async (userMessage: string, attachments?: string[]) => {
     if (isLoading) return;
@@ -90,11 +49,6 @@ export default function NeuralHub() {
     setIsLoading(true);
     setCurrentThoughts([]);
 
-    if (rightPaneMode !== 'terminal') {
-      setRightPaneMode('thoughts');
-    }
-
-    // ... rest of the fetch logic stays the same ...
     try {
       const response = await fetch('/api/agent/execute', {
         method: 'POST',
@@ -177,10 +131,35 @@ export default function NeuralHub() {
                 ? "bg-foreground/5 text-foreground border border-border/50"
                 : "bg-black/40 border border-white/5 text-foreground/90 font-medium"
             )}>
+              {m.role === 'assistant' && m.thoughts && m.thoughts.length > 0 && (
+                <div className="mb-4">
+                  <ThoughtSpace steps={m.thoughts} />
+                </div>
+              )}
               {m.content}
             </div>
           </motion.div>
         ))}
+
+        {/* Live Thinking Indicator */}
+        <AnimatePresence>
+          {(isLoading || currentThoughts.length > 0) && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="flex flex-col gap-3 max-w-[85%] items-start"
+            >
+              <div className="rounded-2xl px-6 py-4 text-sm bg-black/40 border border-white/5 w-full">
+                <header className="flex items-center gap-2 mb-3">
+                  <div className="h-1.5 w-1.5 rounded-full bg-agent-thinking animate-pulse" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-agent-thinking">TRM Processing</span>
+                </header>
+                <ThoughtSpace steps={currentThoughts} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         <div ref={scrollRef} />
       </div>
 
