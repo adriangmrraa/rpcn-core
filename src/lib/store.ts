@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type PaneMode = 'thoughts' | 'graph' | 'artifact' | 'terminal';
+export type PaneMode = 'thoughts' | 'graph' | 'artifact' | 'terminal' | 'settings';
 
 interface UIState {
     rightPaneMode: PaneMode;
