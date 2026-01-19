@@ -5,7 +5,9 @@ import { useEffect, useState } from 'react';
 export default function StatusPage() {
     const [status, setStatus] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [initLoading, setInitLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [initMessage, setInitMessage] = useState<string | null>(null);
 
     const checkStatus = async () => {
         try {
@@ -24,6 +26,28 @@ export default function StatusPage() {
             setError(err.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const initializeSystem = async () => {
+        if (!confirm('WARNING: This will attempt to create database constraints and collections. Continue?')) return;
+
+        setInitLoading(true);
+        setInitMessage(null);
+        try {
+            const res = await fetch('/api/system/init', { method: 'POST' });
+            const data = await res.json();
+            if (data.success) {
+                setInitMessage(`SUCCESS: ${data.message}`);
+                // Refresh status checks to see if things turned green (though init acts on schema, not connectivity)
+                checkStatus();
+            } else {
+                setInitMessage(`ERROR: ${data.error}`);
+            }
+        } catch (err: any) {
+            setInitMessage(`CRITICAL FAILURE: ${err.message}`);
+        } finally {
+            setInitLoading(false);
         }
     };
 
@@ -52,12 +76,28 @@ export default function StatusPage() {
 
     return (
         <div className="min-h-screen bg-black text-green-500 font-mono p-8 font-mono">
-            <header className="mb-8 border-b border-green-900 pb-4">
-                <h1 className="text-2xl font-bold text-green-400">RPCN DIAGNOSTICS</h1>
-                <div className="flex gap-4 text-sm mt-2 opacity-70">
-                    <span>Status: {status?.status}</span>
-                    <span>Timestamp: {status?.timestamp}</span>
-                    <span>Env: {status?.checks?.env?.NODE_ENV || 'unknown'}</span>
+            <header className="mb-8 border-b border-green-900 pb-4 flex justify-between items-end">
+                <div>
+                    <h1 className="text-2xl font-bold text-green-400">RPCN DIAGNOSTICS</h1>
+                    <div className="flex gap-4 text-sm mt-2 opacity-70">
+                        <span>Status: {status?.status}</span>
+                        <span>Timestamp: {status?.timestamp}</span>
+                        <span>Env: {status?.checks?.env?.NODE_ENV || 'unknown'}</span>
+                    </div>
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                    <button
+                        onClick={initializeSystem}
+                        disabled={initLoading}
+                        className="px-4 py-2 bg-green-900/40 border border-green-500 text-green-300 font-bold hover:bg-green-500 hover:text-black transition-all disabled:opacity-50 disabled:cursor-not-allowed uppercase text-xs tracking-widest"
+                    >
+                        {initLoading ? 'INITIALIZING...' : 'INITIALIZE SYSTEM'}
+                    </button>
+                    {initMessage && (
+                        <div className={`text-xs ${initMessage.startsWith('SUCCESS') ? 'text-green-400' : 'text-red-400'}`}>
+                            {initMessage}
+                        </div>
+                    )}
                 </div>
             </header>
 
