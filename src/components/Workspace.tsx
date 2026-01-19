@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { Brain, MessageSquare, Database, Settings, Command, Search, Code, Layout, Terminal, ShoppingBag, ShieldCheck } from 'lucide-react';
 import { useUIStore } from '@/lib/store';
 import { useRouter, usePathname } from 'next/navigation';
+import { LiveTerminal } from '@/components/LiveTerminal';
 
 interface WorkspaceProps {
     children: React.ReactNode;
@@ -133,7 +134,6 @@ export function Workspace({ children, rightPane: rightPaneProp, isThinking: isTh
                 <PanelResizeHandle className="w-1 bg-border/20 transition-colors hover:bg-agent-thinking/40" />
 
                 {/* Center Pane: Dynamic Content */}
-                import {LiveTerminal} from '@/components/LiveTerminal';
 
                 // ... existing imports ...
 
