@@ -12,7 +12,7 @@ export const getNeo4jDriver = () => {
         process.env.NEO4J_PASSWORD || 'password'
       ),
       {
-        encrypted: process.env.NODE_ENV === 'production' ? 'ENCRYPTION_ON' : 'ENCRYPTION_OFF',
+        encrypted: process.env.NEO4J_ENCRYPTION === 'OFF' ? 'ENCRYPTION_OFF' : (process.env.NODE_ENV === 'production' ? 'ENCRYPTION_ON' : 'ENCRYPTION_OFF'),
         disableLosslessIntegers: true,
       }
     );
