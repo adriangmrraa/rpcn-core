@@ -9,4 +9,4 @@ export const config = {
   workflows: [reasoningEngine],
 };
 
-export const mastra = new Mastra(config);
+export const mastra = new Mastra(config as any);
